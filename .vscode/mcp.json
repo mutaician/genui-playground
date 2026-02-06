@@ -1,0 +1,9 @@
+{
+        "servers": {
+                "tambo": {
+                        "url": "https://mcp.tambo.co/mcp",
+                        "type": "http"
+                }
+        },
+        "inputs": []
+}
