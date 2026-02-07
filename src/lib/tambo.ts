@@ -25,22 +25,30 @@ export const tools: TamboTool[] = [];
 export const components: TamboComponent[] = [
   {
     name: "GeneratedComponent",
-    description: `Generate ONE small React component demo (MAX 25 lines of code).
+    description: `Generate ONE small React component demo (MAX 30 lines of code).
+
+IMPORTANT - LIGHT MODE BY DEFAULT:
+- Background: bg-white or bg-gray-50
+- Text: text-gray-900, text-gray-600 for secondary
+- Borders: border-gray-200
+- Accents: Use teal-500/cyan-500 for highlights
+
+ONLY use dark mode (bg-gray-800, text-white) if user explicitly asks.
 
 CRITICAL RULES:
 - MAXIMUM 42 lines of code total
-- ONE simple component only
-- Use Tailwind CSS (dark theme: bg-gray-800, text-white, border-gray-700)
+- ONE focused component only
+- Use Tailwind CSS
 - End with: render(<ComponentName />);
 - Include 2-3 mock data items max
 
-Example (documentation bot):
+Example (documentation search result - LIGHT theme):
 function DocResult() {
   return (
-    <div className="p-4 bg-gray-800 rounded-lg border border-gray-700">
-      <h3 className="text-white font-medium">Getting Started</h3>
-      <p className="text-gray-400 text-sm mt-1">Quick setup guide...</p>
-      <span className="text-xs text-green-400">95% match</span>
+    <div className="p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
+      <h3 className="text-gray-900 font-medium">Getting Started</h3>
+      <p className="text-gray-600 text-sm mt-1">Quick setup guide for new users...</p>
+      <span className="text-xs text-teal-600 font-medium">95% match</span>
     </div>
   );
 }

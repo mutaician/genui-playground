@@ -32,6 +32,7 @@ import {
 } from "@/components/tambo/thread-history";
 import { useMergeRefs } from "@/lib/thread-hooks";
 import type { Suggestion } from "@tambo-ai/react";
+import { useTamboThreadInput } from "@tambo-ai/react";
 import type { VariantProps } from "class-variance-authority";
 import * as React from "react";
 
@@ -46,6 +47,10 @@ export interface MessageThreadFullProps extends React.HTMLAttributes<HTMLDivElem
    * @example variant="compact"
    */
   variant?: VariantProps<typeof messageVariants>["variant"];
+  /**
+   * Optional initial prompt to pre-fill in the input field
+   */
+  initialPrompt?: string;
 }
 
 /**
@@ -54,7 +59,7 @@ export interface MessageThreadFullProps extends React.HTMLAttributes<HTMLDivElem
 export const MessageThreadFull = React.forwardRef<
   HTMLDivElement,
   MessageThreadFullProps
->(({ className, variant, ...props }, ref) => {
+>(({ className, variant, initialPrompt, ...props }, ref) => {
   const { containerRef, historyPosition } = useThreadContainerContext();
   const mergedRef = useMergeRefs<HTMLDivElement | null>(ref, containerRef);
 
@@ -70,21 +75,21 @@ export const MessageThreadFull = React.forwardRef<
   const defaultSuggestions: Suggestion[] = [
     {
       id: "suggestion-1",
-      title: "Get started",
-      detailedSuggestion: "What can you help me with?",
-      messageId: "welcome-query",
+      title: "Documentation Bot",
+      detailedSuggestion: "What generative UI for a documentation chatbot?",
+      messageId: "docs-query",
     },
     {
       id: "suggestion-2",
-      title: "Learn more",
-      detailedSuggestion: "Tell me about your capabilities.",
-      messageId: "capabilities-query",
+      title: "E-commerce",
+      detailedSuggestion: "Create UI patterns for an e-commerce assistant",
+      messageId: "ecommerce-query",
     },
     {
       id: "suggestion-3",
-      title: "Examples",
-      detailedSuggestion: "Show me some example queries I can try.",
-      messageId: "examples-query",
+      title: "Travel Bot",
+      detailedSuggestion: "Design UI for a travel booking chatbot",
+      messageId: "travel-query",
     },
   ];
 
@@ -113,7 +118,8 @@ export const MessageThreadFull = React.forwardRef<
         {/* Message input */}
         <div className="px-4 pb-4">
           <MessageInput>
-            <MessageInputTextarea placeholder="Type your message or paste images..." />
+            <InitialPromptSetter prompt={initialPrompt} />
+            <MessageInputTextarea placeholder="Describe your chatbot use case..." />
             <MessageInputToolbar>
               <MessageInputFileButton />
               <MessageInputMcpPromptButton />
@@ -138,3 +144,21 @@ export const MessageThreadFull = React.forwardRef<
   );
 });
 MessageThreadFull.displayName = "MessageThreadFull";
+
+/**
+ * Helper component to set initial prompt value on mount
+ */
+function InitialPromptSetter({ prompt }: { prompt?: string }) {
+  const { setValue } = useTamboThreadInput();
+  const hasSetRef = React.useRef(false);
+
+  React.useEffect(() => {
+    if (prompt && !hasSetRef.current) {
+      setValue(prompt);
+      hasSetRef.current = true;
+    }
+  }, [prompt, setValue]);
+
+  return null;
+}
+
