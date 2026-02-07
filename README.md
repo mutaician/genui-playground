@@ -2,6 +2,8 @@
 
 A generative UI application that creates React components dynamically from natural language. Describe what you need, and the AI builds it live.
 
+![GenUI Playground Landing Page](landing-page.png)
+
 ---
 
 ## The Problem
@@ -34,6 +36,8 @@ The interface adapts to the user, not the other way around.
 ### Live Component Generation
 
 Describe any UI element and watch it render in real-time. The AI generates complete React components with Tailwind CSS styling, then executes them directly in the browser using react-live.
+
+![Live Component Generation Example](example.png)
 
 Components are not templates or pre-built blocks. They're generated fresh based on your specific requirements.
 
