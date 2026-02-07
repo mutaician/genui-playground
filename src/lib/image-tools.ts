@@ -1,14 +1,14 @@
 /**
  * @file image-tools.ts
- * @description Tambo tools for image generation using Gemini API
+ * @description Tambo tool for image generation using Gemini API + GCS storage
  */
 
 import { TamboTool } from "@tambo-ai/react";
 import { z } from "zod";
 
 /**
- * Tool to generate an image using Gemini's Nano Banana model
- * Returns a data URL that can be used directly in <img> src
+ * Tool to generate an image using Gemini API
+ * Images are stored in GCS and a short public URL is returned
  */
 export const generateImageTool: TamboTool = {
   name: "generateImage",
@@ -20,8 +20,7 @@ Use this when the user's component needs an image, such as:
 - Icons or illustrations
 - Background images
 
-The tool returns a short imageUrl (like /api/generate-image?id=xxx) that can be used directly in <img src={...}>.
-This URL does NOT overwhelm the context - it's just a short path.`,
+Returns a short public URL to the generated image.`,
   tool: async ({ prompt }: { prompt: string }): Promise<{ imageUrl: string; success: boolean; error?: string }> => {
     try {
       const response = await fetch("/api/generate-image", {
@@ -35,10 +34,9 @@ This URL does NOT overwhelm the context - it's just a short path.`,
       const data = await response.json();
 
       if (data.success && data.imageUrl) {
-        // Return the SHORT url path, not base64!
         return {
           success: true,
-          imageUrl: data.imageUrl, // e.g. "/api/generate-image?id=img_abc123"
+          imageUrl: data.imageUrl,
         };
       }
 
@@ -60,7 +58,7 @@ This URL does NOT overwhelm the context - it's just a short path.`,
   }),
   outputSchema: z.object({
     success: z.boolean(),
-    imageUrl: z.string().describe("Short URL path to the generated image (e.g. /api/generate-image?id=xxx)"),
+    imageUrl: z.string().describe("Public URL to the generated image"),
     error: z.string().optional(),
   }),
 };
