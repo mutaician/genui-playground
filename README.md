@@ -1,131 +1,220 @@
-# Tambo Template
+# GenUI Playground
 
-This is a starter NextJS app with Tambo hooked up to get your AI app development started quickly.
+A generative UI application that creates React components dynamically from natural language. Describe what you need, and the AI builds it live.
 
-## Get Started
+---
 
-1. Run `npm create-tambo@latest my-tambo-app` for a new project
+## The Problem
 
-2. `npm install`
+Building user interfaces is slow. Every new screen, every variant, every design iteration requires a developer to manually write code. This creates bottlenecks:
 
-3. `npx tambo init`
+- Designers can't experiment without developer involvement
+- Prototyping takes hours instead of minutes
+- Users can't customize interfaces to their preferences
+- Static UIs force everyone into the same workflow
 
-- or rename `example.env.local` to `.env.local` and add your tambo API key you can get for free [here](https://tambo.co/dashboard).
+## The Solution
 
-4. Run `npm run dev` and go to `localhost:3000` to use the app!
+GenUI Playground flips this model. Instead of writing components, you describe them:
 
-## Customizing
+> "Create a pricing card with three tiers"
 
-### Change what components tambo can control
+The AI generates a working React component, renders it live, and lets you refine it through conversation:
 
-You can see how components are registered with tambo in `src/lib/tambo.ts`:
+> "Make the middle tier stand out more"
+> "Change the color scheme to purple"
+> "Add a comparison table below"
 
-```tsx
-export const components: TamboComponent[] = [
-  {
-    name: "Graph",
-    description:
-      "A component that renders various types of charts (bar, line, pie) using Recharts. Supports customizable data visualization with labels, datasets, and styling options.",
-    component: Graph,
-    propsSchema: graphSchema,
-  },
-  // Add more components here
-];
+The interface adapts to the user, not the other way around.
+
+---
+
+## Features
+
+### Live Component Generation
+
+Describe any UI element and watch it render in real-time. The AI generates complete React components with Tailwind CSS styling, then executes them directly in the browser using react-live.
+
+Components are not templates or pre-built blocks. They're generated fresh based on your specific requirements.
+
+### Interactive Customization
+
+Generated components can include live controls for tweaking properties without regenerating. Users can adjust:
+
+- Primary and secondary colors via preset swatches
+- Layout density (compact, detailed, minimal)
+- Typography scale
+- Border radius styling
+
+These controls work two ways: click to change, or tell the AI "make it more compact" and watch it update.
+
+### AI-Generated Images
+
+When a component needs visuals, the AI can generate them. Request a travel card for Paris and it creates both the component and a destination image to match.
+
+Images are stored server-side and referenced by short URLs, keeping the AI context clean and responsive.
+
+### Component Variations
+
+Ask for "different approaches" or "multiple options" and the system generates several distinct designs side-by-side. Compare a minimal card against a detailed one. Pick your favorite or ask for refinements.
+
+---
+
+## How It Works
+
+The application combines three technologies:
+
+**Tambo SDK** handles the AI orchestration. It decides which component to render based on the conversation, manages streaming props, and coordinates tool execution. Components register with schemas that tell the AI what props they accept.
+
+**react-live** enables runtime rendering. Generated code executes in the browser without a build step. Users see working components, not static previews.
+
+**Gemini API** provides image generation. When visuals are needed, a Tambo tool calls Gemini, stores the result, and passes a reference to the component.
+
+### Architecture
+
+```
+User prompt
+    │
+    ▼
+┌─────────────────────────────────────────────────┐
+│  Tambo SDK                                      │
+│  - Selects component (Generated, Interactive,  │
+│    or Comparison)                               │
+│  - Generates props from natural language        │
+│  - Executes tools (image generation)            │
+└─────────────────────────────────────────────────┘
+    │
+    ▼
+┌─────────────────────────────────────────────────┐
+│  Component Layer                                │
+│  - GeneratedComponent: Basic live preview       │
+│  - InteractiveGeneratedComponent: With controls │
+│  - ComponentComparison: Multiple variations     │
+└─────────────────────────────────────────────────┘
+    │
+    ▼
+┌─────────────────────────────────────────────────┐
+│  react-live                                     │
+│  - Parses generated JSX                         │
+│  - Executes in sandboxed environment            │
+│  - Renders live preview                         │
+└─────────────────────────────────────────────────┘
 ```
 
-You can install the graph component into any project with:
+---
+
+## Tambo Features Used
+
+This project demonstrates several Tambo SDK capabilities:
+
+| Feature | Usage |
+|---------|-------|
+| Component Registration | Three component types with detailed schemas and AI-friendly descriptions |
+| Props Streaming | Generated code streams in progressively as the AI writes |
+| useTamboComponentState | Interactive component properties sync with AI-driven updates |
+| Tools | Image generation tool with schema validation |
+| TamboProvider | Central configuration with components and tools |
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18 or later
+- npm or yarn
+- Tambo API key from [tambo.co/dashboard](https://tambo.co/dashboard)
+- Gemini API key (optional, for image generation)
+
+### Installation
+
+Clone the repository:
 
 ```bash
-npx tambo add graph
+git clone https://github.com/mutaician/genui-playground.git
+cd genui-playground
+npm install
 ```
 
-The example Graph component demonstrates several key features:
+Create `.env.local` in the project root:
 
-- Different prop types (strings, arrays, enums, nested objects)
-- Multiple chart types (bar, line, pie)
-- Customizable styling (variants, sizes)
-- Optional configurations (title, legend, colors)
-- Data visualization capabilities
-
-Update the `components` array with any component(s) you want tambo to be able to use in a response!
-
-You can find more information about the options [here](https://docs.tambo.co/concepts/generative-interfaces/generative-components)
-
-### Add tools for tambo to use
-
-Tools are defined with `inputSchema` and `outputSchema`:
-
-```tsx
-export const tools: TamboTool[] = [
-  {
-    name: "globalPopulation",
-    description:
-      "A tool to get global population trends with optional year range filtering",
-    tool: getGlobalPopulationTrend,
-    inputSchema: z.object({
-      startYear: z.number().optional(),
-      endYear: z.number().optional(),
-    }),
-    outputSchema: z.array(
-      z.object({
-        year: z.number(),
-        population: z.number(),
-        growthRate: z.number(),
-      }),
-    ),
-  },
-];
+```
+NEXT_PUBLIC_TAMBO_API_KEY=your_tambo_key
+GEMINI_API_KEY=your_gemini_key
 ```
 
-Find more information about tools [here.](https://docs.tambo.co/concepts/tools)
+Start the development server:
 
-### The Magic of Tambo Requires the TamboProvider
-
-Make sure in the TamboProvider wrapped around your app:
-
-```tsx
-...
-<TamboProvider
-  apiKey={process.env.NEXT_PUBLIC_TAMBO_API_KEY!}
-  components={components} // Array of components to control
-  tools={tools} // Array of tools it can use
->
-  {children}
-</TamboProvider>
+```bash
+npm run dev
 ```
 
-In this example we do this in the `Layout.tsx` file, but you can do it anywhere in your app that is a client component.
+Open [http://localhost:3000/chat](http://localhost:3000/chat) to start generating components.
 
-### Voice input
+---
 
-The template includes a `DictationButton` component using the `useTamboVoice` hook for speech-to-text input.
+## Example Prompts
 
-### MCP (Model Context Protocol)
+**Simple components:**
+- "Create a user profile card with avatar, name, and bio"
+- "Build a notification banner with dismiss button"
+- "Make a stats dashboard with three metrics"
 
-The template includes MCP support for connecting to external tools and resources. You can use the MCP hooks from `@tambo-ai/react/mcp`:
+**Interactive components:**
+- "Create a customizable product card"
+- "Build an interactive pricing table I can tweak"
 
-- `useTamboMcpPromptList` - List available prompts from MCP servers
-- `useTamboMcpPrompt` - Get a specific prompt
-- `useTamboMcpResourceList` - List available resources
+**With images:**
+- "Create a travel booking card for Tokyo with a destination image"
+- "Build a recipe card with a food photo"
 
-See `src/components/tambo/mcp-components.tsx` for example usage.
+**Variations:**
+- "Show me three different styles for a login form"
+- "Compare minimal vs detailed approaches for a task list"
 
-### Change where component responses are shown
+---
 
-The components used by tambo are shown alongside the message response from tambo within the chat thread, but you can have the result components show wherever you like by accessing the latest thread message's `renderedComponent` field:
+## Project Structure
 
-```tsx
-const { thread } = useTambo();
-const latestComponent =
-  thread?.messages[thread.messages.length - 1]?.renderedComponent;
-
-return (
-  <div>
-    {latestComponent && (
-      <div className="my-custom-wrapper">{latestComponent}</div>
-    )}
-  </div>
-);
+```
+src/
+├── app/
+│   ├── chat/page.tsx          # Main chat interface
+│   ├── api/generate-image/    # Image generation endpoint
+│   └── page.tsx               # Landing page
+├── components/
+│   └── genui/
+│       ├── GeneratedComponent.tsx
+│       ├── InteractiveGeneratedComponent.tsx
+│       ├── ComponentComparison.tsx
+│       └── CodePreview.tsx
+└── lib/
+    ├── tambo.ts               # Component and tool registration
+    └── image-tools.ts         # Image generation tool
 ```
 
-For more detailed documentation, visit [Tambo's official docs](https://docs.tambo.co).
+---
+
+## Technical Notes
+
+**Why react-live?** It enables true runtime execution of generated code. The AI outputs JSX strings that become real React components without preprocessing.
+
+**Why store images server-side?** The Gemini API returns base64-encoded images. Sending these back through the AI context would overflow it. Instead, we store images with short IDs and pass just the reference.
+
+**Why useTamboComponentState?** It creates bidirectional binding between UI controls and AI commands. The user can click a color swatch OR say "change to blue" and both work.
+
+---
+
+## Built With
+
+- [Next.js 15](https://nextjs.org/) - React framework
+- [Tambo SDK](https://tambo.co/) - Generative UI orchestration
+- [react-live](https://github.com/FormidableLabs/react-live) - Live code editor and preview
+- [Tailwind CSS](https://tailwindcss.com/) - Styling
+- [Gemini API](https://ai.google.dev/) - Image generation
+
+---
+
+## License
+
+MIT
