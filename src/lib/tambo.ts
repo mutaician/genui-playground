@@ -14,6 +14,7 @@ import { z } from "zod";
 // GenUI Playground - Dynamic Component Generation
 import { GeneratedComponent, generatedComponentSchema } from "@/components/genui/GeneratedComponent";
 import { ComponentComparison, componentComparisonSchema } from "@/components/genui/ComponentComparison";
+import { InteractiveGeneratedComponent, interactiveComponentSchema } from "@/components/genui/InteractiveGeneratedComponent";
 
 /**
  * tools - empty for now, AI generates components directly
@@ -85,5 +86,36 @@ Each variation must be genuinely different - not just color changes but differen
     description: "Displays clickable cards with links and summaries.",
     component: DataCard,
     propsSchema: dataCardSchema,
+  },
+  {
+    name: "InteractiveGeneratedComponent",
+    description: `Generate a React component with CUSTOMIZABLE properties that users can tweak.
+
+Use this when the user wants to:
+- Adjust colors, layout, or styling interactively
+- Explore different variations without regenerating
+- Have AI help modify the component appearance later
+
+CRITICAL: The generated code must use the 'config' object from scope:
+- config.primaryColor (hex string like "#0d9488")
+- config.secondaryColor (hex string)
+- config.layout ("compact" | "detailed" | "minimal")
+- config.fontSize ("sm" | "base" | "lg")
+- config.rounded ("none" | "sm" | "md" | "lg" | "full")
+
+Example:
+function TravelCard() {
+  return (
+    <div style={{ borderColor: config.primaryColor }} className="border-2 p-4 rounded-lg bg-white">
+      <h3 style={{ color: config.primaryColor }} className="font-semibold">Paris Trip</h3>
+      <p className="text-gray-600 text-sm">3 nights, departure Mar 15</p>
+    </div>
+  );
+}
+render(<TravelCard />);
+
+Also provide customization defaults in the 'customization' prop.`,
+    component: InteractiveGeneratedComponent,
+    propsSchema: interactiveComponentSchema,
   },
 ];
