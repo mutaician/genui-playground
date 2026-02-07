@@ -16,10 +16,13 @@ import { GeneratedComponent, generatedComponentSchema } from "@/components/genui
 import { ComponentComparison, componentComparisonSchema } from "@/components/genui/ComponentComparison";
 import { InteractiveGeneratedComponent, interactiveComponentSchema } from "@/components/genui/InteractiveGeneratedComponent";
 
+// Image generation tools
+import { imageTools } from "@/lib/image-tools";
+
 /**
- * tools - empty for now, AI generates components directly
+ * tools - image generation and other utilities
  */
-export const tools: TamboTool[] = [];
+export const tools: TamboTool[] = [...imageTools];
 
 /**
  * components
@@ -102,11 +105,15 @@ CRITICAL: The generated code must use the 'config' object from scope:
 - config.layout ("compact" | "detailed" | "minimal")
 - config.fontSize ("sm" | "base" | "lg")
 - config.rounded ("none" | "sm" | "md" | "lg" | "full")
+- config.generatedImage (optional URL - if you generated an image using the generateImage tool)
 
-Example:
+When the component needs an image, FIRST call the generateImage tool, then use the returned imageUrl in config.generatedImage.
+
+Example with image:
 function TravelCard() {
   return (
     <div style={{ borderColor: config.primaryColor }} className="border-2 p-4 rounded-lg bg-white">
+      {config.generatedImage && <img src={config.generatedImage} alt="" className="w-full h-32 object-cover rounded mb-3" />}
       <h3 style={{ color: config.primaryColor }} className="font-semibold">Paris Trip</h3>
       <p className="text-gray-600 text-sm">3 nights, departure Mar 15</p>
     </div>

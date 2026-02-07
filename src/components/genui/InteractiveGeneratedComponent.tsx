@@ -13,6 +13,7 @@ const customizationSchema = z.object({
   layout: z.enum(["compact", "detailed", "minimal"]).optional().describe("Layout style"),
   fontSize: z.enum(["sm", "base", "lg"]).optional().describe("Base font size"),
   rounded: z.enum(["none", "sm", "md", "lg", "full"]).optional().describe("Border radius style"),
+  generatedImage: z.string().optional().describe("URL of AI-generated image (from generateImage tool)"),
 });
 
 export const interactiveComponentSchema = z.object({
@@ -25,11 +26,13 @@ IMPORTANT: Access customization via the 'config' object in scope:
 - config.layout ('compact' | 'detailed' | 'minimal')
 - config.fontSize ('sm' | 'base' | 'lg')
 - config.rounded ('none' | 'sm' | 'md' | 'lg' | 'full')
+- config.generatedImage (optional URL - if an image was generated)
 
-Example:
+Example with image:
 function Card() {
   return (
     <div style={{ borderColor: config.primaryColor }} className="border-2 p-4 rounded-lg">
+      {config.generatedImage && <img src={config.generatedImage} alt="" className="w-full h-32 object-cover rounded mb-2" />}
       <h3 style={{ color: config.primaryColor }}>Hello</h3>
     </div>
   );
@@ -90,6 +93,11 @@ export function InteractiveGeneratedComponent({
     customization?.rounded || "md",
     customization?.rounded
   );
+  const [generatedImage, setGeneratedImage] = useTamboComponentState(
+    "generatedImage",
+    customization?.generatedImage || "",
+    customization?.generatedImage
+  );
 
   const [showCode, setShowCode] = useState(false);
   const [showControls, setShowControls] = useState(true);
@@ -101,6 +109,7 @@ export function InteractiveGeneratedComponent({
     layout,
     fontSize,
     rounded,
+    generatedImage,
   };
 
   // Create scope with config object for react-live
