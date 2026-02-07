@@ -4,3 +4,5 @@ export type { CodePreviewProps } from "./CodePreview";
 export { GeneratedComponent, generatedComponentSchema } from "./GeneratedComponent";
 export type { GeneratedComponentProps } from "./GeneratedComponent";
 
+export { ComponentComparison, componentComparisonSchema } from "./ComponentComparison";
+export type { ComponentComparisonProps } from "./ComponentComparison";

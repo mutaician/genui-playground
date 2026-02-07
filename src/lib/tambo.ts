@@ -13,6 +13,7 @@ import { z } from "zod";
 
 // GenUI Playground - Dynamic Component Generation
 import { GeneratedComponent, generatedComponentSchema } from "@/components/genui/GeneratedComponent";
+import { ComponentComparison, componentComparisonSchema } from "@/components/genui/ComponentComparison";
 
 /**
  * tools - empty for now, AI generates components directly
@@ -55,6 +56,23 @@ function DocResult() {
 render(<DocResult />);`,
     component: GeneratedComponent,
     propsSchema: generatedComponentSchema,
+  },
+  {
+    name: "ComponentComparison",
+    description: `Use this ONLY when the user explicitly wants:
+- To compare different UI approaches ("show me options", "compare styles")
+- Multiple variations ("give me choices", "different approaches")
+- To be surprised ("surprise me", "show me alternatives")
+
+Generate 2-3 DIFFERENT UI approaches for the same use case. Each variation should:
+- Have a distinct visual style (e.g., "Minimal", "Detailed", "Compact")
+- Be under 42 lines of code
+- Use LIGHT MODE by default (bg-white, text-gray-900)
+- End with render(<ComponentName />);
+
+Each variation must be genuinely different - not just color changes but different layouts, information density, or interaction patterns.`,
+    component: ComponentComparison,
+    propsSchema: componentComparisonSchema,
   },
   {
     name: "Graph",
